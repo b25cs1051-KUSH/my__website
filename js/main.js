@@ -63,7 +63,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // 4. Contact Form Handling (Google Apps Script Integration)
     const contactForm = document.getElementById('contactForm');
-    const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycby7G0HiPkQgC_wUXkX7ZJAjTpgxBQWbFxHoY451x3YwkSSXubZjN8cmYtJgGBqkECvUvQ/exec';
+    const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzaU1X1Msl4pLqmtPGbuQAoD2NtCWrgI6R9_fl5Ipqx8LZMadZNpVP7W7zBs_AjtYXwyQ/exec';
 
     if (contactForm) {
         contactForm.addEventListener('submit', function (e) {
@@ -82,34 +82,31 @@ document.addEventListener('DOMContentLoaded', () => {
             // Because checkboxes with the same name will be overwritten in standard FormData if we don't handle them manually,
             // let's grab all checked services and join them.
             const checkedServices = [];
-            document.querySelectorAll('input[name="ServiceRequested"]:checked').forEach(checkbox => {
+            document.querySelectorAll('input[name="ServicsRequested"]:checked').forEach(checkbox => {
                 checkedServices.push(checkbox.value);
             });
-            formData.set('ServiceRequested', checkedServices.join(', '));
+            formData.set('ServicsRequested', checkedServices.join(', '));
 
             // Perform POST request to Google Apps Script
             fetch(GOOGLE_SCRIPT_URL, {
                 method: 'POST',
-                body: formData
+                body: new URLSearchParams(formData), // Send as application/x-www-form-urlencoded
+                mode: 'no-cors' // Crucial for Google Apps Script to prevent strict CORS blocks
             })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.result === 'success') {
-                        // Success UI Feedback
-                        btn.innerHTML = `<i class="fas fa-check"></i> Sent Successfully!`;
-                        btn.style.background = "#22c55e"; // Neo-brutalist green
-                        btn.style.color = "white";
+                .then(response => {
+                    // With no-cors, we get an opaque response back even on success. 
+                    // So we assume success if it didn't throw an outright network error.
+                    btn.innerHTML = `<i class="fas fa-check"></i> Sent Successfully!`;
+                    btn.style.background = "#22c55e"; // Neo-brutalist green
+                    btn.style.color = "white";
 
-                        setTimeout(() => {
-                            btn.innerHTML = originalText;
-                            btn.style.background = "";
-                            btn.style.color = "";
-                            btn.disabled = false;
-                            contactForm.reset();
-                        }, 3000);
-                    } else {
-                        throw new Error('Server returned an error.');
-                    }
+                    setTimeout(() => {
+                        btn.innerHTML = originalText;
+                        btn.style.background = "";
+                        btn.style.color = "";
+                        btn.disabled = false;
+                        contactForm.reset();
+                    }, 3000);
                 })
                 .catch(error => {
                     console.error('Error!', error.message);
