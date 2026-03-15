@@ -129,4 +129,103 @@ document.addEventListener('DOMContentLoaded', () => {
     if (yearSpan) {
         yearSpan.textContent = new Date().getFullYear();
     }
+
+    // 6. Pi AI Chatbot Logic
+    const piToggleBtn = document.getElementById('piToggleBtn');
+    const piCloseBtn = document.getElementById('piCloseBtn');
+    const piChatWindow = document.getElementById('piChatWindow');
+    const piChatForm = document.getElementById('piChatForm');
+    const piChatInput = document.getElementById('piChatInput');
+    const piChatBody = document.getElementById('piChatBody');
+    const piAttentionGrabber = document.getElementById('piAttentionGrabber');
+
+    if (piToggleBtn && piChatWindow) {
+        // Toggle Open
+        piToggleBtn.addEventListener('click', () => {
+            piChatWindow.classList.add('active');
+            piToggleBtn.style.transform = 'scale(0)';
+            if (piAttentionGrabber) piAttentionGrabber.style.opacity = '0'; // Hide the tip
+            setTimeout(() => { document.getElementById('piChatInput').focus(); }, 300);
+        });
+
+        // Toggle Close
+        piCloseBtn.addEventListener('click', () => {
+            piChatWindow.classList.remove('active');
+            piToggleBtn.style.transform = 'scale(1)';
+        });
+
+        // Chat History Array
+        let chatHistory = [];
+
+        // Create Chat Message Element
+        function addMessage(text, type) {
+            const msgDiv = document.createElement('div');
+            msgDiv.className = `pi-message ${type}`;
+            msgDiv.innerHTML = text; // allow HTML tags
+            piChatBody.appendChild(msgDiv);
+            piChatBody.scrollTop = piChatBody.scrollHeight;
+        }
+
+        // Logic for Bot Responses via Backend API
+        async function getBotResponse(userMsg) {
+            try {
+                const response = await fetch('http://localhost:3000/api/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        message: userMsg,
+                        history: chatHistory
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+
+                const data = await response.json();
+
+                // Update history with this exchange
+                chatHistory.push({ role: 'user', text: userMsg });
+                chatHistory.push({ role: 'model', text: data.reply });
+
+                // Truncate history if it gets too long (keep last 10 messages)
+                if (chatHistory.length > 20) chatHistory = chatHistory.slice(-20);
+
+                return data.reply;
+            } catch (error) {
+                console.error("Error communicating with AI backend:", error);
+                return "I'm having a little trouble connecting to my brain right now! Could you please <a href='#contact' onclick='document.getElementById(\"piCloseBtn\").click()' style='color:var(--clr-accent-blue);font-weight:bold;text-decoration:underline;'>use our contact form</a> to reach Kush directly? 😅";
+            }
+        }
+
+        // Handle Sending Message
+        piChatForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const text = piChatInput.value.trim();
+            if (!text) return;
+
+            // Add user message
+            addMessage(text, 'sent');
+            piChatInput.value = '';
+
+            // Loading state
+            const loadingId = 'loading-' + Date.now();
+            const loadingDiv = document.createElement('div');
+            loadingDiv.className = `pi-message received`;
+            loadingDiv.id = loadingId;
+            loadingDiv.innerHTML = `<span class="typing-indicator"><span></span><span></span><span></span></span>`;
+            piChatBody.appendChild(loadingDiv);
+            piChatBody.scrollTop = piChatBody.scrollHeight;
+
+            // Bot response wait for fetch
+            const responseText = await getBotResponse(text);
+
+            // Remove Loader & show response (with a tiny fake delay for natural feel if API is too fast)
+            setTimeout(() => {
+                const loader = document.getElementById(loadingId);
+                if (loader) loader.remove();
+                addMessage(responseText, 'received');
+            }, 300);
+        });
+    }
 });

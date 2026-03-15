@@ -455,6 +455,46 @@
         </div>
     </footer>
 
+    <!-- AI Assistant Pi -->
+    <div class="pi-chatbot-container" id="piChatbot">
+
+        <!-- Attention Grabber for the AI Button -->
+        <div class="pi-attention-grabber" id="piAttentionGrabber">
+            👋 Ask Pi anything!
+            <div class="pi-attention-arrow"></div>
+        </div>
+
+        <button class="pi-toggle-btn" id="piToggleBtn" aria-label="Toggle AI Chat">
+            <i class="fas fa-robot"></i>
+        </button>
+        <div class="pi-chat-window" id="piChatWindow">
+            <div class="pi-chat-header">
+                <div class="pi-header-info">
+                    <img src="logo.jpg" alt="Pi AI" class="pi-avatar">
+                    <div>
+                        <h4 style="margin: 0; font-size: 1rem; color: black; line-height: 1.2;">Pi Assistant</h4>
+                        <span
+                            style="font-size: 0.8rem; color: var(--clr-text-secondary); display: flex; align-items: center; gap: 4px;">
+                            <span class="status-dot"></span> Online
+                        </span>
+                    </div>
+                </div>
+                <button class="pi-close-btn" id="piCloseBtn"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="pi-chat-body" id="piChatBody">
+                <div class="pi-message received">
+                    Hi! I'm Pi, Kush's AI assistant. How can I help you elevate your business today? 😊
+                </div>
+            </div>
+            <div class="pi-chat-input-area">
+                <form id="piChatForm" style="display: flex; gap: 8px; width: 100%;">
+                    <input type="text" id="piChatInput" placeholder="Ask me anything..." required autocomplete="off">
+                    <button type="submit" class="pi-send-btn"><i class="fas fa-paper-plane"></i></button>
+                </form>
+            </div>
+        </div>
+    </div>
+
     <!-- Custom JS -->
     <script src="js/main.js"></script>
 </body>
