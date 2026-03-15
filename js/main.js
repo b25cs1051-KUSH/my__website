@@ -169,7 +169,11 @@ document.addEventListener('DOMContentLoaded', () => {
         // Logic for Bot Responses via Backend API
         async function getBotResponse(userMsg) {
             try {
-                const response = await fetch('http://localhost:3000/api/chat', {
+                // Determine API URL based on environment
+                const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+                const apiUrl = isLocal ? 'http://localhost:5000/api/chat' : '/api/chat';
+
+                const response = await fetch(apiUrl, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
