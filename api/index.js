@@ -76,6 +76,9 @@ app.post('/api/chat', async (req, res) => {
     }
 });
 
-app.listen(port, () => {
-    console.log(`Pi Backend Server running on http://localhost:${port}`);
-});
+if (require.main === module) {
+    app.listen(port, () => {
+        console.log(`Pi Backend Server running on http://localhost:${port}`);
+    });
+}
+module.exports = app;
