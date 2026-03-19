@@ -171,7 +171,7 @@ document.addEventListener('DOMContentLoaded', () => {
             try {
                 // Determine API URL based on environment
                 const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-                const apiUrl = isLocal ? 'http://localhost:5000/api/chat' : '/api/chat';
+                const apiUrl = isLocal ? 'https://my-website-eehq.onrender.com/api/chat' : '/api/chat';
 
                 const response = await fetch(apiUrl, {
                     method: 'POST',
